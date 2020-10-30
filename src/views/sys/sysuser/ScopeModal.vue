@@ -7,22 +7,16 @@
     :confirmLoading="confirmLoading"
   >
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
-        <a-form-item
-          label="用户名"
-          :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input
-            v-model="username"
-            disabled
-            placeholder="用户名"/>
+      <a-form :form="form" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="用户名">
+          <a-input v-model="username" disabled placeholder="用户名"/>
         </a-form-item>
-        <a-form-item label="角色"
-                     :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="角色">
           <a-select mode="multiple"
                     style="width: 100%"
                     placeholder="无角色"
                     :allowClear="true"
-                    v-model="roleIds">
+                    v-model="roleCodes">
             <a-select-option v-for="selectData in roleSelectData"
                              :key="selectData.value">
               {{ selectData.name }}
@@ -55,8 +49,7 @@ export default {
 
       userId: '',
       username: '',
-      roleIds: [],
-
+      roleCodes: [],
       roleSelectData: []
     }
   },
@@ -72,12 +65,12 @@ export default {
 
       this.userId = record.userId
       this.username = record.username
-      this.roleIds = []
+      this.roleCodes = []
 
       getUserScope(record.userId)
         .then(res => {
-          if (res.data.roleIds) {
-            this.roleIds = res.data.roleIds.map(String)
+          if (res.data.roleCodes) {
+            this.roleCodes = res.data.roleCodes.map(String)
             this.confirmLoading = false
           }
         })
@@ -85,14 +78,14 @@ export default {
     handleOk (e) {
       this.confirmLoading = true
       const userScope = {
-        roleIds: this.roleIds
+        roleCodes: this.roleCodes
       }
       putUserScope(this.userId, userScope).then(res => {
         if (res.code === 200) {
-          this.$message.success(res.msg)
+          this.$message.success(res.message)
           this.handleClose()
         } else {
-          this.$message.warning(res.msg)
+          this.$message.warning(res.message)
         }
       })
         .finally(() => {
